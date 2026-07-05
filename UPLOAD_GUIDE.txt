@@ -1,0 +1,15 @@
+Ladda upp INNEHÅLLET i denna mapp till GitHub.
+
+Det ska se ut så här:
+
+app/
+  dashboard/
+    page.js
+  globals.css
+  layout.js
+  page.js
+README.md
+package.json
+next.config.js
+
+Viktigt: app måste vara en mapp i GitHub.
