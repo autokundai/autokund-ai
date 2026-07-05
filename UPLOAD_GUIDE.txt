@@ -1,15 +1,10 @@
-Ladda upp INNEHÅLLET i denna mapp till GitHub.
+Ladda upp allt innehåll i denna mapp till GitHub och välj att ersätta filer om GitHub frågar.
 
-Det ska se ut så här:
+Viktiga nya filer/mappar:
+- lib/supabaseClient.js
+- app/login/page.js
+- app/signup/page.js
+- uppdaterad app/dashboard/page.js
+- uppdaterad package.json
 
-app/
-  dashboard/
-    page.js
-  globals.css
-  layout.js
-  page.js
-README.md
-package.json
-next.config.js
-
-Viktigt: app måste vara en mapp i GitHub.
+Efter commit kommer Vercel deploya automatiskt.

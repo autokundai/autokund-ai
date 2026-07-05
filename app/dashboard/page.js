@@ -1,12 +1,45 @@
+"use client";
+
+import { useEffect, useState } from 'react';
+import { supabase } from '../../lib/supabaseClient';
+
 export default function Dashboard() {
-  const company = {
+  const [user, setUser] = useState(null);
+  const [company, setCompany] = useState({
     name: 'Din Salong',
     services: 'Klippning, färgning, styling',
     hours: 'Mån–fre 09:00–18:00',
     phone: '070-000 00 00',
     email: 'kontakt@dinsalong.se',
     booking: 'https://example.com/boka'
-  };
+  });
+
+  useEffect(() => {
+    async function loadUser() {
+      const { data } = await supabase.auth.getUser();
+
+      if (!data.user) {
+        window.location.href = '/login';
+      } else {
+        setUser(data.user);
+      }
+    }
+
+    loadUser();
+  }, []);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    window.location.href = '/login';
+  }
+
+  function updateCompany(field, value) {
+    setCompany({ ...company, [field]: value });
+  }
+
+  if (!user) {
+    return <main className="loading">Laddar dashboard...</main>;
+  }
 
   return (
     <main className="dashboard">
@@ -16,22 +49,37 @@ export default function Dashboard() {
         <a>Företagsinfo</a>
         <a>Chatbot</a>
         <a>Installation</a>
+        <button className="logout" onClick={handleLogout}>Logga ut</button>
       </aside>
 
       <section className="dashContent">
-        <h1>Dashboard-demo</h1>
-        <p className="muted">Här kommer kunden senare kunna fylla i sin företagsinformation.</p>
+        <h1>Dashboard</h1>
+        <p className="muted">Inloggad som {user.email}</p>
 
         <div className="dashGrid">
           <div className="panel">
             <h2>Företagsinfo</h2>
-            <label>Företagsnamn</label><input defaultValue={company.name} />
-            <label>Tjänster</label><textarea defaultValue={company.services} />
-            <label>Öppettider</label><input defaultValue={company.hours} />
-            <label>Telefon</label><input defaultValue={company.phone} />
-            <label>E-post</label><input defaultValue={company.email} />
-            <label>Bokningslänk</label><input defaultValue={company.booking} />
+
+            <label>Företagsnamn</label>
+            <input value={company.name} onChange={(e) => updateCompany('name', e.target.value)} />
+
+            <label>Tjänster</label>
+            <textarea value={company.services} onChange={(e) => updateCompany('services', e.target.value)} />
+
+            <label>Öppettider</label>
+            <input value={company.hours} onChange={(e) => updateCompany('hours', e.target.value)} />
+
+            <label>Telefon</label>
+            <input value={company.phone} onChange={(e) => updateCompany('phone', e.target.value)} />
+
+            <label>E-post</label>
+            <input value={company.email} onChange={(e) => updateCompany('email', e.target.value)} />
+
+            <label>Bokningslänk</label>
+            <input value={company.booking} onChange={(e) => updateCompany('booking', e.target.value)} />
+
             <button>Spara ändringar</button>
+            <p className="muted">Spara-knappen kopplas till databasen i nästa steg.</p>
           </div>
 
           <div className="panel">
@@ -42,9 +90,12 @@ export default function Dashboard() {
               <div className="chatMessage bot">Vi erbjuder {company.services}.</div>
               <div className="chatMessage user">När har ni öppet?</div>
               <div className="chatMessage bot">Våra öppettider är {company.hours}.</div>
+              <div className="chatMessage user">Hur kontaktar jag er?</div>
+              <div className="chatMessage bot">Du kan nå oss på {company.phone} eller {company.email}.</div>
             </div>
+
             <h3>Installationskod</h3>
-            <code>{'<script src="https://autokund.ai/widget.js"></script>'}</code>
+            <code>{'<script src="https://autokund-ai.vercel.app/widget.js"></script>'}</code>
           </div>
         </div>
       </section>

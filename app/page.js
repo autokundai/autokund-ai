@@ -6,18 +6,22 @@ export default function Home() {
         <div className="navLinks">
           <a href="#funktioner">Funktioner</a>
           <a href="#pris">Pris</a>
-          <a href="/dashboard">Demo</a>
+          <a href="/login">Logga in</a>
+          <a className="smallButton" href="/signup">Skapa konto</a>
         </div>
       </nav>
 
       <section className="hero">
         <div>
-          <p className="badge">AI-assistent för svenska småföretag</p>
+          <p className="badge">AI-receptionist för svenska småföretag</p>
           <h1>Fler kunder. Snabbare svar. Mindre administration.</h1>
-          <p>AutoKund AI hjälper företag att svara på frågor, samla kundförfrågningar och skicka besökare vidare till bokning.</p>
+          <p>
+            AutoKund AI hjälper företag att svara på frågor, samla kundförfrågningar
+            och skicka besökare vidare till bokning – direkt på hemsidan.
+          </p>
           <div className="buttons">
-            <a className="button primary" href="/dashboard">Testa demo</a>
-            <a className="button secondary" href="mailto:autokundai@gmail.com">Kontakta oss</a>
+            <a className="button primary" href="/signup">Starta gratis</a>
+            <a className="button secondary" href="/dashboard">Se dashboard-demo</a>
           </div>
         </div>
 
