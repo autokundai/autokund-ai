@@ -37,6 +37,30 @@ export default function Dashboard() {
     setCompany({ ...company, [field]: value });
   }
 
+  async function saveCompany() {
+    console.log("saveCompany körs");
+
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const { error } = await supabase
+    .from("companies")
+    .upsert({
+      user_id: user.id,
+      company_name: company.name,
+      services: company.services,
+      opening_hours: company.hours,
+      phone: company.phone,
+      email: company.email,
+      booking_url: company.booking
+    });
+
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Företagsinformationen sparades!");
+  }
+}
+
   if (!user) {
     return <main className="loading">Laddar dashboard...</main>;
   }
@@ -78,7 +102,10 @@ export default function Dashboard() {
             <label>Bokningslänk</label>
             <input value={company.booking} onChange={(e) => updateCompany('booking', e.target.value)} />
 
-            <button>Spara ändringar</button>
+            <button onClick={saveCompany}>
+              Spara ändringar
+            </button>
+
             <p className="muted">Spara-knappen kopplas till databasen i nästa steg.</p>
           </div>
 
