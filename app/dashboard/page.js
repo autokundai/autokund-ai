@@ -1,5 +1,6 @@
 "use client";
 
+import AIReceptionist from '../../components/AIReceptionist';
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 
@@ -19,10 +20,27 @@ export default function Dashboard() {
       const { data } = await supabase.auth.getUser();
 
       if (!data.user) {
-        window.location.href = '/login';
-      } else {
-        setUser(data.user);
-      }
+  window.location.href = '/login';
+} else {
+  setUser(data.user);
+
+  const { data: companyData, error } = await supabase
+    .from("companies")
+    .select("*")
+    .eq("user_id", data.user.id)
+    .single();
+
+  if (companyData && !error) {
+    setCompany({
+      name: companyData.company_name || "",
+      services: companyData.services || "",
+      hours: companyData.opening_hours || "",
+      phone: companyData.phone || "",
+      email: companyData.email || "",
+      booking: companyData.booking_url || ""
+    });
+  }
+}
     }
 
     loadUser();
@@ -38,21 +56,27 @@ export default function Dashboard() {
   }
 
   async function saveCompany() {
-    console.log("saveCompany körs");
-
   const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    alert("Du är inte inloggad.");
+    return;
+  }
 
   const { error } = await supabase
     .from("companies")
-    .upsert({
-      user_id: user.id,
-      company_name: company.name,
-      services: company.services,
-      opening_hours: company.hours,
-      phone: company.phone,
-      email: company.email,
-      booking_url: company.booking
-    });
+    .upsert(
+      {
+        user_id: user.id,
+        company_name: company.name,
+        services: company.services,
+        opening_hours: company.hours,
+        phone: company.phone,
+        email: company.email,
+        booking_url: company.booking
+      },
+      { onConflict: "user_id" }
+    );
 
   if (error) {
     alert(error.message);

@@ -1,0 +1,97 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { supabase } from "../../lib/supabaseClient";
+
+export default function AIReceptionistPage() {
+  const [user, setUser] = useState(null);
+  const [company, setCompany] = useState(null);
+  const [question, setQuestion] = useState("");
+  const [answer, setAnswer] = useState("");
+
+  useEffect(() => {
+    async function loadData() {
+      const { data } = await supabase.auth.getUser();
+
+      if (!data.user) {
+        window.location.href = "/login";
+        return;
+      }
+
+      setUser(data.user);
+
+      const { data: companyData } = await supabase
+        .from("companies")
+        .select("*")
+        .eq("user_id", data.user.id)
+        .maybeSingle();
+
+      setCompany(companyData);
+    }
+
+    loadData();
+  }, []);
+
+  function generateAnswer() {
+    const q = question.toLowerCase();
+
+    if (!company) {
+      setAnswer("Du behöver först fylla i företagsinformationen i dashboarden.");
+      return;
+    }
+
+    if (q.includes("öppet") || q.includes("öppettider")) {
+      setAnswer(`Våra öppettider är: ${company.opening_hours || "inte angivna ännu"}.`);
+    } else if (q.includes("tjänst") || q.includes("erbjuder") || q.includes("gör ni")) {
+      setAnswer(`Vi erbjuder: ${company.services || "inga tjänster angivna ännu"}.`);
+    } else if (q.includes("telefon") || q.includes("ringa") || q.includes("kontakt")) {
+      setAnswer(`Du kan kontakta oss på ${company.phone || "telefon saknas"} eller ${company.email || "e-post saknas"}.`);
+    } else if (q.includes("boka") || q.includes("tid")) {
+      setAnswer(`Du kan boka här: ${company.booking_url || "bokningslänk saknas"}.`);
+    } else {
+      setAnswer(`Tack för din fråga! Kontakta oss gärna på ${company.email || "vår e-post"} så hjälper vi dig vidare.`);
+    }
+  }
+
+  if (!user) {
+    return <main className="loading">Laddar AI Receptionist...</main>;
+  }
+
+  return (
+    <main className="dashboard">
+      <aside className="sidebar">
+        <h2>AutoKund AI</h2>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/ai">AI Receptionist</a>
+        <a>Installation</a>
+      </aside>
+
+      <section className="dashContent">
+        <h1>AI Receptionist</h1>
+        <p className="muted">
+          Testa hur AI:n svarar baserat på företagets sparade information.
+        </p>
+
+        <div className="panel">
+          <h2>{company?.company_name || "Ditt företag"}</h2>
+
+          <label>Ställ en fråga</label>
+          <input
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="Ex: Har ni öppet på lördag?"
+          />
+
+          <button onClick={generateAnswer}>Skicka fråga</button>
+
+          {answer && (
+            <div className="message">
+              <strong>AI svarar:</strong>
+              <p>{answer}</p>
+            </div>
+          )}
+        </div>
+      </section>
+    </main>
+  );
+}
