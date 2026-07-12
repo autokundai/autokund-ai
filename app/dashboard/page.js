@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import AIReceptionist from '../../components/AIReceptionist';
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
@@ -92,11 +93,10 @@ export default function Dashboard() {
   return (
     <main className="dashboard">
       <aside className="sidebar">
-        <h2>AutoKund AI</h2>
-        <a>Dashboard</a>
-        <a>Företagsinfo</a>
-        <a>Chatbot</a>
-        <a>Installation</a>
+        <Link href="/dashboard">Dashboard</Link>
+        <Link href="/dashboard">Företagsinfo</Link>
+        <Link href="/ai">🤖 AI Receptionist</Link>
+        <Link href="/install">🌐 Installation</Link>
         <button className="logout" onClick={handleLogout}>Logga ut</button>
       </aside>
 
